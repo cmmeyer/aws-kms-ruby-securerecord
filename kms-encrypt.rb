@@ -1,17 +1,16 @@
 #!/usr/bin/ruby
-require 'pp'
+#require 'pp'
 require 'rubygems'
 require 'aws-sdk-core'
 require 'base64'
 require 'gibberish'
-require 'json'
+#require 'json'
 require_relative 'kms-masterkey'
 
 region    = 'us-east-1'
 key_alias = 'alias/SecurityDemoKey'
 dyname_table = 'SecurityDemo'
-employee_id = '007'
-message_id  = '001'
+employee_id = '006'
 
 if ARGV[0].nil?
   puts "Usage: encrypt.rb INPUTFILE"
@@ -38,7 +37,7 @@ resp = kms.generate_data_key(
 
 cipher = Gibberish::AES::CBC.new(resp[:plaintext])
 enc = cipher.encrypt("Some data")
-outputhash = { 'employeeID' => employee_id, 'messageID' => message_id, 'ciphertext' => cipher.encrypt(validatorkey), 'datakey' => Base64.strict_encode64(resp.ciphertext_blob)}
+outputhash = { 'employeeID' => employee_id, 'messageID' => SecureRandom.uuid(), 'ciphertext' => cipher.encrypt(validatorkey), 'datakey' => Base64.strict_encode64(resp.ciphertext_blob)}
 
 #puts JSON.pretty_generate(outputhash)
 
@@ -47,3 +46,6 @@ dynamodb.put_item(
 	table_name: dyname_table,
 	item:  outputhash
 )
+
+puts "Encrypted message stored: #{outputhash['messageID']}"
+

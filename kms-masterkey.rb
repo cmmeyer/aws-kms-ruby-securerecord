@@ -2,9 +2,6 @@
 require 'rubygems'
 require 'aws-sdk-core'
 
-region  = 'us-east-1'
-key_alias = 'alias/SecurityDemoKey'
-
 class MasterKey
 	attr_reader :key_arn
 	def initialize(key_alias,region = 'us-east-1')

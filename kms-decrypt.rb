@@ -8,13 +8,14 @@ require 'json'
 
 region = 'us-east-1'
 dynamo_table = 'SecurityDemo'
-employee_id = '007'
+employee_id = '006'
 
 if ARGV[0].nil?
   puts "Usage: kms-decrypt.rb MESSAGEID"
   exit 1
 end
 
+#contents = JSON.parse(IO.read(ARGV[0]))
 dynamodb = Aws::DynamoDB::Client.new(region:region)
 contents = dynamodb.get_item(
 	table_name: dynamo_table,
@@ -24,14 +25,17 @@ contents = dynamodb.get_item(
 	}
 ).data.item
 
-#contents = JSON.parse(IO.read(ARGV[0]))
-kms = Aws::KMS::Client.new(region:region)
-datakey =  Base64.strict_decode64(contents['datakey'])
+if contents.nil?
+	puts "Record not found."
+else
+	kms = Aws::KMS::Client.new(region:region)
+	datakey =  Base64.strict_decode64(contents['datakey'])
 
-cleartextkey = kms.decrypt(:ciphertext_blob => datakey,
-  encryption_context: { 'KeyType' => 'Some descriptive text here' }
-)
+	cleartextkey = kms.decrypt(:ciphertext_blob => datakey,
+	  encryption_context: { 'KeyType' => 'Some descriptive text here' }
+	)
 
-cipher = Gibberish::AES::CBC.new(cleartextkey.plaintext)
-cleartext = cipher.decrypt(contents['ciphertext'])
-puts cleartext
+	cipher = Gibberish::AES::CBC.new(cleartextkey.plaintext)
+	cleartext = cipher.decrypt(contents['ciphertext'])
+	puts cleartext
+end
