@@ -1,10 +1,10 @@
 #!/usr/bin/ruby
-require_relative 'kms-securemessage'
+require_relative 'kms-securerecord'
 
-mymessage = SecureMessage.new()
-mymessage.encrypt('The rain in spain falls mainly on the plain')
-puts mymessage.id
+myrecord = SecureRecord.new()
+myrecord.store('The rain in spain falls mainly on the plain')
+puts myrecord.id
 
-myothermessage = SecureMessage.new('foo')
-myothermessage.encrypt('This is pretty secret')
-puts myothermessage.id
+myotherrecord = SecureRecord.new('foo')
+myotherrecord.store('This is pretty secret')
+puts myotherrecord.id
