@@ -56,7 +56,7 @@ class KMSLab < Sinatra::Base
 
 		{}.to_json	
 	end	
-	
+ 	
 	post '/client/encrypt' do
 		content_type :json
 		
